@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Users · CSD-CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: #f8f8f8;
+            --surface: #fff;
+            --border: #e4e4e7;
+            --border-light: #f4f4f5;
+            --text-1: #09090b;
+            --text-2: #71717a;
+            --text-3: #a1a1aa;
+            --accent: #18181b;
+            --accent-fg: #fafafa;
+            --green: #16a34a;
+            --blue: #2563eb;
+            --r: 8px;
+            --rl: 12px;
+            --sh1: 0 1px 2px rgba(0, 0, 0, .05);
+            --sh2: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .06);
+            --sh4: 0 10px 15px -3px rgba(0, 0, 0, .08), 0 4px 6px rgba(0, 0, 0, .04);
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5
+        }
+
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            gap: 12px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            white-space: nowrap;
+            text-decoration: none;
+            color: var(--text-1)
+        }
+
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .user-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-2);
+            padding: 4px 10px;
+            border-radius: var(--r);
+            background: var(--border-light)
+        }
+
+        .logout-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            background: var(--surface);
+            color: var(--text-2);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .15s
+        }
+
+        .logout-btn:hover {
+            background: var(--border-light)
+        }
+
+        .topbar-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-2);
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: var(--r);
+            transition: all .15s
+        }
+
+        .topbar-back:hover {
+            background: var(--border-light);
+            color: var(--text-1)
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 32px 16px
+        }
+
+        .page-hd {
+            margin-bottom: 24px
+        }
+
+        .page-hd h1 {
+            font-size: 22px;
+            font-weight: 700
+        }
+
+        .page-hd p {
+            font-size: 13px;
+            color: var(--text-3);
+            margin-top: 4px
+        }
+
+        .user-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: var(--rl);
+            overflow: hidden;
+            box-shadow: var(--sh2)
+        }
+
+        .user-tbl th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--text-3);
+            background: var(--border-light);
+            border-bottom: 1px solid var(--border)
+        }
+
+        .user-tbl td {
+            padding: 12px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-light)
+        }
+
+        .user-tbl tr:last-child td {
+            border-bottom: none
+        }
+
+        .role-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .role-pill.admin {
+            background: #fef3c7;
+            color: #92400e
+        }
+
+        .role-pill.executive {
+            background: #dbeafe;
+            color: #1e40af
+        }
+
+        .role-pill.manager {
+            background: #e0e7ff;
+            color: #3730a3
+        }
+
+        .roles-section {
+            margin-top: 32px
+        }
+
+        .roles-section h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px
+        }
+
+        .role-card {
+            background: var(--surface);
+            border-radius: var(--rl);
+            box-shadow: var(--sh2);
+            overflow: hidden;
+            margin-bottom: 12px
+        }
+
+        .role-card-hd {
+            padding: 14px 16px;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .role-card-body {
+            padding: 12px 16px
+        }
+
+        .role-card-body ul {
+            list-style: none;
+            padding: 0;
+            margin: 0
+        }
+
+        .role-card-body li {
+            padding: 4px 0;
+            font-size: 13px;
+            color: var(--text-2);
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .role-card-body li .icon {
+            flex-shrink: 0;
+            width: 16px;
+            text-align: center
+        }
+
+        .login-gate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px
+        }
+
+        .login-box {
+            background: var(--surface);
+            border-radius: var(--rl);
+            padding: 32px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: var(--sh4)
+        }
+
+        .login-box h2 {
+            font-size: 20px;
+            margin-bottom: 4px
+        }
+
+        .login-box p {
+            font-size: 13px;
+            color: var(--text-3);
+            margin-bottom: 20px
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
+            outline: none
+        }
+
+        .login-box input:focus {
+            border-color: var(--accent)
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            color: var(--accent-fg);
+            border: none;
+            border-radius: var(--r);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit
+        }
+
+        .login-box button:hover {
+            opacity: .9
+        }
+
+        .login-box .error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+            text-align: center
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .sbox {
+            background: var(--surface);
+            border-radius: var(--rl);
+            padding: 24px;
+            box-shadow: var(--sh2);
+            text-align: center
+        }
+
+        .sbox p {
+            color: var(--text-2);
+            font-size: 14px
+        }
+
+        .spin {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: sp 0.6s linear infinite;
+            margin: 0 auto 12px
+        }
+
+        @keyframes sp {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .denied {
+            text-align: center;
+            padding: 60px 20px
+        }
+
+        .denied h2 {
+            font-size: 24px;
+            color: var(--text-3);
+            margin-bottom: 8px
+        }
+
+        .denied p {
+            font-size: 13px;
+            color: var(--text-3)
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--r);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .15s
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-fg)
+        }
+
+        .btn-primary:hover {
+            opacity: .85
+        }
+
+        .btn-default {
+            background: var(--border-light);
+            color: var(--text-1)
+        }
+
+        .btn-default:hover {
+            background: var(--border)
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #dc2626;
+            padding: 4px 8px;
+            font-size: 12px
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px
+        }
+
+        .modal.open {
+            display: flex
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--rl);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--sh4)
+        }
+
+        .modal-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .modal-hd .modal-title {
+            font-size: 16px;
+            font-weight: 700
+        }
+
+        .modal-hd .modal-sub {
+            font-size: 12px;
+            color: var(--text-3);
+            margin-top: 2px
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--text-3);
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1
+        }
+
+        .modal-close:hover {
+            color: var(--text-1)
+        }
+
+        .modal-body {
+            padding: 20px
+        }
+
+        .fg {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .flabel {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: .4px
+        }
+
+        .fctl {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            background: var(--surface);
+            color: var(--text-1)
+        }
+
+        .fctl:focus {
+            border-color: var(--accent)
+        }
+
+        .toast-wrap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .toast {
+            background: var(--accent);
+            color: var(--accent-fg);
+            padding: 10px 20px;
+            border-radius: var(--r);
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--sh4);
+            transition: opacity .3s;
+            max-width: 320px
+        }
+
+        .toast.err {
+            background: #dc2626
+        }
+
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            padding: 20px
+        }
+
+        .confirm-box {
+            background: var(--surface);
+            border-radius: var(--rl);
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--sh4);
+            text-align: center
+        }
+
+        .confirm-box p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: var(--text-1)
+        }
+
+        .confirm-box .btn-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-gate" id="loginGate">
+        <div class="login-box">
+            <h2>Users</h2>
+            <p>Sign in to view app users</p>
+            <input type="email" id="loginEmail" value="dev@cloudedots.com" placeholder="Email" autocomplete="email">
+            <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+            <button onclick="doLogin()">Sign in</button>
+            <div class="error" id="loginError">Invalid email or password</div>
+        </div>
+    </div>
+
+    <div id="crmContent" class="hidden">
+        <div class="topbar">
+            <a href="/" class="brand"><span class="brand-dot"></span>CRM | Piplhr</a>
+            <div class="topbar-right">
+                <span class="user-badge" id="userInfo"></span>
+                <a href="/" class="topbar-back">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                    Dashboard
+                </a>
+                <button class="logout-btn" onclick="doLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="container" id="mainContent">
+            <div class="page-hd">
+                <h1>Users</h1>
+                <p>All registered users of the CRM application</p>
+            </div>
+            <div class="sbox"><div class="spin"></div><p>Loading users…</p></div>
+        </div>
+    </div>
+
+    <div class="modal" id="addUserModal">
+        <div class="modal-box">
+            <div class="modal-hd">
+                <div>
+                    <div class="modal-title">Add User</div>
+                    <div class="modal-sub">Create a new user account</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('addUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                    <div class="fg"><label class="flabel">Name</label><input id="newUserName" class="fctl" placeholder="Full name"></div>
+                    <div class="fg"><label class="flabel">Email</label><input id="newUserEmail" class="fctl" type="email" placeholder="Email"></div>
+                    <div class="fg"><label class="flabel">Password</label><input id="newUserPassword" class="fctl" type="password" placeholder="Password"></div>
+                    <div class="fg"><label class="flabel">Role</label><select id="newUserRole" class="fctl"><option value="Admin">Admin</option><option value="Executive" selected>Executive</option></select></div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+                        <button class="btn btn-default" onclick="closeModal('addUserModal')">Cancel</button>
+                        <button class="btn btn-primary" onclick="addNewUser()">Add User</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <script>
+        var _user = null;
+
+        function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+        function call(fn, args, ok, fail) {
+            fetch('/api/crm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fn: fn, args: args, user: _user })
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                if (d.error) { if (fail) fail(d); else toast(d.error, true); }
+                else if (ok) ok(d.result);
+            }).catch(function (e) {
+                if (fail) fail(e); else toast('Network error', true);
+            });
+        }
+
+        function toast(msg, isError) {
+            var wrap = document.getElementById('toastWrap');
+            var el = document.createElement('div');
+            el.className = 'toast' + (isError ? ' err' : '');
+            el.textContent = msg;
+            wrap.appendChild(el);
+            setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.remove(); }, 300); }, 2500);
+        }
+
+        function doLogin() {
+            var email = document.getElementById('loginEmail').value.trim();
+            var password = document.getElementById('loginPass').value;
+            document.getElementById('loginError').style.display = 'none';
+            call('login', [email, password], function (u) {
+                _user = u;
+                try { localStorage.setItem('crm_user', JSON.stringify(u)); } catch (e) { }
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('crmContent').classList.remove('hidden');
+                document.getElementById('userInfo').textContent = _user.name + ' (' + _user.role + ')';
+                loadUsers();
+            }, function () {
+                document.getElementById('loginError').style.display = 'block';
+            });
+        }
+
+        function doLogout() {
+            _user = null;
+            try { localStorage.removeItem('crm_user'); } catch (e) { }
+            document.getElementById('loginGate').style.display = 'flex';
+            document.getElementById('crmContent').classList.add('hidden');
+        }
+
+        function loadUsers() {
+            call('getUsers', [], function (users) {
+                if (!users) { document.getElementById('mainContent').innerHTML = '<div class="container"><div class="sbox"><p>No users found</p></div></div>'; return; }
+                var isAdmin = _user && _user.role === 'Admin';
+                if (!isAdmin) {
+                    document.getElementById('mainContent').innerHTML = '<div class="denied"><h2>Access Denied</h2><p>Only Admin users can view this page.</p></div>';
+                    return;
+                }
+                var html = '<div class="page-hd" style="display:flex;align-items:center;justify-content:space-between"><div><h1>Users</h1><p>All registered users of the CRM application</p></div><button class="btn btn-primary btn-sm" onclick="openModal(\'addUserModal\')">+ Add User</button></div>';
+                html += '<table class="user-tbl"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th style="width:60px">Action</th></tr></thead><tbody>';
+                for (var i = 0; i < users.length; i++) {
+                    var u = users[i];
+                    var roleClass = u.role === 'Admin' ? 'admin' : 'executive';
+                    var delBtn = u.role === 'Admin' ? '<span style="color:var(--text-3);font-size:11px">—</span>' : '<button class="btn btn-danger" onclick="deleteUser(' + u.id + ')">Delete</button>';
+                    html += '<tr><td>' + esc(u.name) + '</td><td>' + esc(u.email) + '</td><td><span class="role-pill ' + roleClass + '">' + esc(u.role) + '</span></td><td>' + delBtn + '</td></tr>';
+                }
+                html += '</tbody></table>';
+
+                html += '<div class="roles-section"><h2>Roles &amp; Access</h2>';
+
+                html += '<div class="role-card"><div class="role-card-hd"><span class="role-pill admin" style="font-size:12px">Admin</span> Full Access</div><div class="role-card-body"><ul>' +
+                    '<li><span class="icon">✅</span> View, add, edit, and delete contacts</li>' +
+                    '<li><span class="icon">✅</span> Manage users (add, edit, delete)</li>' +
+                    '<li><span class="icon">✅</span> Merge duplicate contacts</li>' +
+                    '<li><span class="icon">✅</span> Bulk delete contacts</li>' +
+                    '<li><span class="icon">✅</span> Access all pages (Reminders, Merge, Users)</li>' +
+                    '</ul></div></div>';
+
+                html += '<div class="role-card"><div class="role-card-hd"><span class="role-pill manager" style="font-size:12px">Manager</span> Elevated Access</div><div class="role-card-body"><ul>' +
+                    '<li><span class="icon">✅</span> View all contacts (assigned + unassigned)</li>' +
+                    '<li><span class="icon">✅</span> Add, edit contacts</li>' +
+                    '<li><span class="icon">✅</span> Assign and reassign contacts to users</li>' +
+                    '<li><span class="icon">✅</span> Add and manage remarks</li>' +
+                    '<li><span class="icon">✅</span> Add and manage reminders</li>' +
+                    '<li><span class="icon">❌</span> Delete contacts</li>' +
+                    '<li><span class="icon">❌</span> Merge or bulk delete contacts</li>' +
+                    '<li><span class="icon">❌</span> Manage users</li>' +
+                    '</ul></div></div>';
+
+                html += '<div class="role-card"><div class="role-card-hd"><span class="role-pill executive" style="font-size:12px">Executive</span> Limited Access</div><div class="role-card-body"><ul>' +
+                    '<li><span class="icon">✅</span> View, add, and edit contacts</li>' +
+                    '<li><span class="icon">❌</span> Delete contacts</li>' +
+                    '<li><span class="icon">✅</span> Add and manage remarks</li>' +
+                    '<li><span class="icon">✅</span> Add and manage reminders</li>' +
+                    '<li><span class="icon">❌</span> Merge or bulk delete contacts</li>' +
+                    '<li><span class="icon">❌</span> Manage users</li>' +
+                    '</ul></div></div>';
+
+                html += '</div>';
+
+                document.getElementById('mainContent').innerHTML = html;
+            }, function () {
+                document.getElementById('mainContent').innerHTML = '<div class="container"><div class="sbox"><p>Failed to load users.</p></div></div>';
+            });
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        function addNewUser() {
+            if (!_user || _user.role !== 'Admin') return;
+            var name = document.getElementById('newUserName').value.trim();
+            var email = document.getElementById('newUserEmail').value.trim();
+            var password = document.getElementById('newUserPassword').value;
+            var role = document.getElementById('newUserRole').value;
+            if (!name || !email || !password) { toast('All fields required', true); return; }
+            call('addUser', [{ name: name, email: email, password: password, role: role }], function (u) {
+                if (!u) { toast('Failed to add user (email may already exist)', true); return; }
+                toast('User added');
+                document.getElementById('newUserName').value = '';
+                document.getElementById('newUserEmail').value = '';
+                document.getElementById('newUserPassword').value = '';
+                closeModal('addUserModal');
+                loadUsers();
+            }, null, 'Adding user');
+        }
+
+        function deleteUser(id) {
+            showConfirm('Delete this user?', function () {
+                call('deleteUser', [id], function () { toast('User deleted'); loadUsers(); }, null, 'Deleting user');
+            });
+        }
+
+        function showConfirm(msg, yesCallback) {
+            var overlay = document.createElement('div');
+            overlay.className = 'confirm-overlay';
+            overlay.innerHTML = '<div class="confirm-box"><p>' + esc(msg) + '</p><div class="btn-group"><button class="btn btn-default" id="confirmNo">Cancel</button><button class="btn btn-primary" id="confirmYes">Delete</button></div></div>';
+            document.body.appendChild(overlay);
+            document.getElementById('confirmNo').addEventListener('click', function () { overlay.remove(); });
+            document.getElementById('confirmYes').addEventListener('click', function () { overlay.remove(); if (yesCallback) yesCallback(); });
+        }
+
+        (function () {
+            var saved = localStorage.getItem('crm_user');
+            if (saved) {
+                _user = JSON.parse(saved);
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('crmContent').classList.remove('hidden');
+                document.getElementById('userInfo').textContent = _user.name + ' (' + _user.role + ')';
+                loadUsers();
+            }
+        })();
+    </script>
+</body>
+
+</html>

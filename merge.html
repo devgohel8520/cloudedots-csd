@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Merge Duplicates · CRM | Piplhr</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+        :root {
+            --bg: #f8f8f8;
+            --surface: #fff;
+            --border: #e4e4e7;
+            --border-light: #f4f4f5;
+            --text-1: #09090b;
+            --text-2: #71717a;
+            --text-3: #a1a1aa;
+            --accent: #18181b;
+            --accent-fg: #fafafa;
+            --ring: #d4d4d8;
+            --green: #16a34a;
+            --blue: #2563eb;
+            --red: #dc2626;
+            --r: 8px;
+            --rl: 12px;
+            --sh1: 0 1px 2px rgba(0, 0, 0, .05);
+            --sh2: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .06);
+        }
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5
+        }
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            gap: 12px
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            white-space: nowrap;
+            text-decoration: none;
+            color: var(--text-1)
+        }
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+        .main {
+            padding: 24px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%
+        }
+        .page-hd {
+            margin-bottom: 24px
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px
+        }
+        .page-sub {
+            font-size: 13px;
+            color: var(--text-2)
+        }
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--rl);
+            padding: 18px;
+            box-shadow: var(--sh1);
+            margin-bottom: 16px
+        }
+        .panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+        .group-card {
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 14px;
+            margin-bottom: 12px;
+            background: var(--surface)
+        }
+        .group-reason {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--blue);
+            margin-bottom: 10px
+        }
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-light)
+        }
+        .contact-row:last-child {
+            border-bottom: none
+        }
+        .contact-row input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            cursor: pointer
+        }
+        .btn-del {
+            background: none;
+            border: none;
+            color: #a1a1aa;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            line-height: 1;
+            transition: background .15s, color .15s
+        }
+        .btn-del:hover {
+            background: #fef2f2;
+            color: #dc2626
+        }
+        .contact-info {
+            flex: 1;
+            min-width: 0
+        }
+        .contact-name {
+            font-weight: 600;
+            font-size: 14px
+        }
+        .contact-meta {
+            font-size: 12px;
+            color: var(--text-2);
+            margin-top: 2px
+        }
+        .contact-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 4px;
+            background: var(--border-light);
+            color: var(--text-2)
+        }
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block
+        }
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-3)
+        }
+        .no-data svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-3);
+            margin-bottom: 12px;
+            opacity: .4
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--r);
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .15s
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-fg)
+        }
+        .btn-primary:hover {
+            opacity: .85
+        }
+        .btn-primary:disabled {
+            opacity: .4;
+            cursor: not-allowed
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-2);
+            border: 1px solid var(--border)
+        }
+        .btn-ghost:hover {
+            background: var(--border-light)
+        }
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px
+        }
+        .btn-danger {
+            background: var(--red);
+            color: #fff
+        }
+        .btn-danger:hover {
+            opacity: .85
+        }
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+        .gap-12 {
+            gap: 12px
+        }
+        .mt-12 {
+            margin-top: 12px
+        }
+        .mb-12 {
+            margin-bottom: 12px
+        }
+        .text-2 {
+            color: var(--text-2)
+        }
+        .text-sm {
+            font-size: 12px
+        }
+        .hidden {
+            display: none !important
+        }
+        .toast-wrap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9999;
+            max-width: 360px
+        }
+        .toast {
+            padding: 12px 18px;
+            border-radius: var(--r);
+            background: var(--accent);
+            color: var(--accent-fg);
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--sh2);
+            animation: fadeIn .2s ease
+        }
+        .toast.err {
+            background: var(--red)
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        .spin {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--text-1);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            margin: 0 auto 12px
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+        .sbox {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-2)
+        }
+        .count-badge {
+            font-size: 12px;
+            color: var(--text-2);
+            margin-left: 6px
+        }
+        .merge-all-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px
+        }
+        @media (max-width:600px) {
+            .main {
+                padding: 16px 12px
+            }
+            .group-card {
+                padding: 10px
+            }
+            .contact-row {
+                flex-wrap: wrap
+            }
+            .merge-all-bar {
+                flex-direction: column;
+                align-items: stretch
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Gate -->
+    <div id="loginGate" style="position:fixed;inset:0;z-index:99999;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;font-family:system-ui,sans-serif;">
+        <div style="color:#fff;font-size:24px;font-weight:700;">CRM &middot; Piplhr</div>
+        <p style="color:#71717a;font-size:14px;">Sign in to continue</p>
+        <div style="display:flex;flex-direction:column;gap:12px;width:300px;">
+            <input type="email" id="loginEmail" placeholder="Email" value="dev@cloudedots.com" style="padding:12px 16px;border:1px solid #27272a;border-radius:8px;background:#18181b;color:#fafafa;font-size:15px;width:100%;outline:none;" onkeydown="if(event.key==='Enter')doLogin()">
+            <input type="password" id="loginPassword" placeholder="Password" style="padding:12px 16px;border:1px solid #27272a;border-radius:8px;background:#18181b;color:#fafafa;font-size:15px;width:100%;outline:none;" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="doLogin()" style="padding:12px;border:none;border-radius:8px;background:#fafafa;color:#09090b;font-size:15px;font-weight:600;cursor:pointer;">Sign In</button>
+        </div>
+        <div id="loginError" style="color:#ef4444;font-size:13px;display:none;">Invalid email or password</div>
+    </div>
+
+    <div id="crmContent" style="display:none;">
+    <header class="topbar">
+        <a href="/" class="brand"><span class="brand-dot"></span> CRM · Piplhr</a>
+        <div style="display:flex;align-items:center;gap:12px">
+            <span id="userInfo" style="font-size:12px;color:var(--text-3);cursor:default"></span>
+            <a href="/" style="font-size:13px;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                Back to Dashboard
+            </a>
+            <button onclick="doLogout()" style="padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text-2);font-size:11px;cursor:pointer;">Logout</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="page-hd">
+            <div class="page-title">Merge Duplicate Contacts</div>
+            <div class="page-sub">Find and merge contacts that share the same name, mobile, or company. All remarks and reminders will be reassigned to the kept contact.</div>
+        </div>
+
+        <div id="mergeAllBar" class="merge-all-bar hidden">
+            <span id="mergeCount" style="font-weight:600">0 groups</span>
+            <div class="flex gap-12 flex-wrap">
+                <button id="selectAllBtn" class="btn btn-ghost btn-sm" onclick="selectAllFirst()">Select First in Each Group</button>
+                <button id="mergeAllBtn" class="btn btn-primary btn-sm" onclick="mergeAllSelected()" disabled>Merge All Selected</button>
+                <button class="btn btn-ghost btn-sm" onclick="loadDuplicates()">↻ Refresh</button>
+            </div>
+        </div>
+
+        <div id="dupContent">
+            <div class="sbox"><div class="spin"></div><p>Scanning for duplicates…</p></div>
+        </div>
+    </main>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+    </div>
+
+    <!-- ═══════════════════════════ CONFIRM DIALOG ════════════════════════════ -->
+    <div id="confirmDialog" style="position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;font-family:system-ui,sans-serif;">
+        <div style="background:#fff;border-radius:12px;padding:24px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.15);">
+            <div id="confirmMsg" style="font-size:14px;color:#18181b;line-height:1.6;margin-bottom:20px;white-space:pre-wrap"></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+                <button id="confirmNoBtn" style="padding:8px 18px;border:1px solid #d4d4d8;border-radius:8px;background:#fff;color:#18181b;font-size:13px;font-weight:600;cursor:pointer;">No</button>
+                <button id="confirmYesBtn" style="padding:8px 18px;border:none;border-radius:8px;background:#18181b;color:#fafafa;font-size:13px;font-weight:600;cursor:pointer;">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var _user = null;
+        var duplicateGroups = [];
+
+        // ─── Auth ────────────────────────────────────────────────────────────────
+        function doLogin() {
+            var email = document.getElementById('loginEmail').value.trim();
+            var password = document.getElementById('loginPassword').value;
+            document.getElementById('loginError').style.display = 'none';
+            fetch('/api/crm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fn: 'login', args: [email, password], user: null })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.error || !data.result) { document.getElementById('loginError').style.display = 'block'; return; }
+                var u = data.result;
+                _user = u;
+                try { localStorage.setItem('crm_user', JSON.stringify(u)); } catch (e) { }
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('crmContent').style.display = 'block';
+                document.getElementById('userInfo').textContent = u.name + ' (' + u.role + ')';
+                loadDuplicates();
+            })
+            .catch(function () { document.getElementById('loginError').style.display = 'block'; });
+        }
+
+        function doLogout() {
+            _user = null;
+            try { localStorage.removeItem('crm_user'); } catch (e) { }
+            document.getElementById('loginGate').style.display = 'flex';
+            document.getElementById('crmContent').style.display = 'none';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function checkAutoLogin() {
+            try {
+                var saved = localStorage.getItem('crm_user');
+                if (saved) { _user = JSON.parse(saved); document.getElementById('loginGate').style.display = 'none'; document.getElementById('crmContent').style.display = 'block'; document.getElementById('userInfo').textContent = _user.name + ' (' + _user.role + ')'; loadDuplicates(); return true; }
+            } catch (e) { }
+            return false;
+        }
+
+        // ─── Toast ────────────────────────────────────────────────────────────────
+        function toast(msg, isErr) {
+            var w = document.getElementById('toastWrap');
+            var t = document.createElement('div');
+            t.className = 'toast' + (isErr ? ' err' : '');
+            t.textContent = msg;
+            w.appendChild(t);
+            setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 3200);
+        }
+
+        function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function showConfirm(msg, yesCallback, noCallback) {
+            document.getElementById('confirmMsg').textContent = msg;
+            var d = document.getElementById('confirmDialog');
+            d.style.display = 'flex';
+            var yesBtn = document.getElementById('confirmYesBtn');
+            var noBtn = document.getElementById('confirmNoBtn');
+            function cleanup() { d.style.display = 'none'; yesBtn.onclick = null; noBtn.onclick = null; }
+            yesBtn.onclick = function () { cleanup(); if (yesCallback) yesCallback(); };
+            noBtn.onclick = function () { cleanup(); if (noCallback) noCallback(); };
+        }
+
+        // ─── API call ─────────────────────────────────────────────────────────────
+        function call(fn, args, ok, fail, progressMsg) {
+            if (progressMsg) {
+                var c = document.getElementById('dupContent');
+                if (c) c.innerHTML = '<div class="sbox"><div class="spin"></div><p>' + esc(progressMsg) + '</p></div>';
+            }
+            fetch('/api/crm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fn: fn, args: args || [], user: _user })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data && data.error) { if (fail) fail(data.error); else toast(data.error, true); return; }
+                if (ok) ok(data && data.result !== undefined ? data.result : data);
+            })
+            .catch(function (e) {
+                if (fail) fail(e.message); else toast('Error: ' + e.message, true);
+            });
+        }
+
+        // ─── Load duplicates ──────────────────────────────────────────────────────
+        function loadDuplicates() {
+            document.getElementById('mergeAllBar').classList.add('hidden');
+            document.getElementById('dupContent').innerHTML = '<div class="sbox"><div class="spin"></div><p>Scanning for duplicates…</p></div>';
+            call('findDuplicates', [], function (groups) {
+                duplicateGroups = groups || [];
+                renderGroups();
+            }, function (err) {
+                document.getElementById('dupContent').innerHTML = '<div class="sbox"><p style="color:#dc2626">' + esc(err) + '</p></div>';
+            });
+        }
+
+        // ─── Render groups ─────────────────────────────────────────────────────────
+        function renderGroups() {
+            var cont = document.getElementById('dupContent');
+            var bar = document.getElementById('mergeAllBar');
+            var count = document.getElementById('mergeCount');
+
+            if (!duplicateGroups.length) {
+                cont.innerHTML = '<div class="panel"><div class="no-data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg><p style="font-size:16px;font-weight:600;margin-bottom:4px">No duplicates found</p><p style="font-size:13px;color:var(--text-2)">All contacts are unique by name, mobile, and company.</p></div></div>';
+                bar.classList.add('hidden');
+                return;
+            }
+
+            bar.classList.remove('hidden');
+            count.textContent = duplicateGroups.length + ' group' + (duplicateGroups.length !== 1 ? 's' : '') + ' · ' + duplicateGroups.reduce(function (s, g) { return s + g.contacts.length; }, 0) + ' contacts';
+
+            var html = '';
+            for (var i = 0; i < duplicateGroups.length; i++) {
+                var g = duplicateGroups[i];
+                var sorted = g.contacts.slice().sort(function (a, b) {
+                    function score(c) {
+                        var fields = 0;
+                        if (c.name) fields++; if (c.company) fields++; if (c.designation) fields++;
+                        if (c.mobile) fields++; if (c.email) fields++; if (c.source) fields++;
+                        if (c.location) fields++;
+                        return fields + (c.remark_count || 0) + (c.reminder_count || 0);
+                    }
+                    return score(b) - score(a);
+                });
+                html += '<div class="group-card" data-group="' + i + '">';
+                html += '<div class="group-reason">' + esc(g.reason) + '</div>';
+                for (var j = 0; j < sorted.length; j++) {
+                    var c = sorted[j];
+                    html += '<div class="contact-row">';
+                    html += '<input type="checkbox" name="group_' + i + '" value="' + c.id + '" data-group="' + i + '" ' + (j === 0 ? 'checked' : '') + ' onchange="updateMergeBtn()">';
+                    html += '<div class="contact-info">';
+                    html += '<div class="contact-name">' + esc(c.name || 'Unnamed') + '</div>';
+                    html += '<div class="contact-meta">';
+                    var parts = [];
+                    if (c.company) parts.push('<span class="contact-tag">' + esc(c.company) + '</span>');
+                    if (c.designation) parts.push('<span class="contact-tag">' + esc(c.designation) + '</span>');
+                    if (c.mobile) parts.push('<span class="contact-tag">' + esc(c.mobile) + '</span>');
+                    if (c.email) parts.push('<span class="contact-tag">' + esc(c.email) + '</span>');
+                    if (c.location) parts.push('<span class="contact-tag">' + esc(c.location) + '</span>');
+                    if (c.status) parts.push('<span class="contact-tag">' + esc(c.status) + '</span>');
+                    if (c.source) parts.push('<span class="contact-tag">' + esc(c.source) + '</span>');
+                    if (c.link) parts.push('<span class="contact-tag">' + esc(c.link) + '</span>');
+                    parts.push('<span class="contact-tag">💬 ' + (c.remark_count || 0) + '</span>');
+                    parts.push('<span class="contact-tag">🔔 ' + (c.reminder_count || 0) + '</span>');
+                    html += parts.join('');
+                    html += '</div></div>';
+                    html += '<button class="btn-del" onclick="deleteContact(' + c.id + ',\'' + esc(c.name || 'Unnamed') + '\',event)" title="Delete this contact">✕</button>';
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            cont.innerHTML = html;
+            updateMergeBtn();
+        }
+
+        // ─── Selection helpers ─────────────────────────────────────────────────────
+        function getSelectedMap() {
+            var map = {};
+            var cbs = document.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < cbs.length; i++) {
+                var cb = cbs[i];
+                var g = cb.getAttribute('data-group');
+                if (cb.checked) {
+                    if (!map[g]) map[g] = [];
+                    map[g].push(parseInt(cb.value));
+                }
+            }
+            return map;
+        }
+
+        function selectAllFirst() {
+            var cbs = document.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < cbs.length; i++) {
+                var cb = cbs[i];
+                var isFirst = cb.closest('.contact-row').parentNode.querySelector('.contact-row') === cb.closest('.contact-row');
+                cb.checked = isFirst;
+            }
+            updateMergeBtn();
+        }
+
+        function updateMergeBtn() {
+            var btn = document.getElementById('mergeAllBtn');
+            var sel = getSelectedMap();
+            var count = Object.keys(sel).length;
+            var anyChecked = false;
+            for (var k in sel) { if (sel[k].length > 0) { anyChecked = true; break; } }
+            btn.disabled = !anyChecked;
+            btn.textContent = 'Merge All (' + count + ' group' + (count !== 1 ? 's' : '') + ')';
+        }
+
+        // ─── Delete a single contact ───────────────────────────────────────────────
+        function deleteContact(id, name, ev) {
+            if (ev) ev.stopPropagation();
+            if (!_user || _user.role !== 'Admin') { toast('Only admins can delete contacts', true); return; }
+            showConfirm('Delete "' + name + '" permanently? This cannot be undone.', function () {
+                call('deleteContact', [{ id: id }], function () {
+                    toast('Deleted "' + name + '"');
+                    loadDuplicates();
+                }, function (err) { toast(err, true); });
+            });
+        }
+
+        // ─── Merge all selected ────────────────────────────────────────────────────
+        function mergeAllSelected() {
+            if (!_user || _user.role !== 'Admin') { toast('Only admins can merge contacts', true); return; }
+            var sel = getSelectedMap();
+            var groups = Object.keys(sel);
+            if (!groups.length) return;
+            var total = 0;
+            for (var k in sel) {
+                var g = duplicateGroups[parseInt(k)];
+                var kept = sel[k];
+                var toMerge = g.contacts.filter(function (c) { return kept.indexOf(c.id) === -1; });
+                if (toMerge.length > 0) total++;
+            }
+            if (!total) { toast('No contacts to merge — all contacts are checked', true); return; }
+            var totalStr = total + ' group' + (total !== 1 ? 's' : '');
+            showConfirm('Merge unchecked contacts into the first checked contact in ' + totalStr + '? Kept contacts will remain untouched. This cannot be undone.', function () {
+                var done = 0;
+                var errors = 0;
+                document.getElementById('mergeAllBtn').disabled = true;
+                document.getElementById('mergeAllBtn').textContent = 'Merging…';
+
+                function processNext() {
+                    if (done + errors >= total) {
+                        var msg = '\u2713 Merged ' + (total - errors) + ' group' + ((total - errors) !== 1 ? 's' : '');
+                        if (errors) msg += ', ' + errors + ' failed';
+                        toast(msg);
+                        document.getElementById('mergeAllBtn').disabled = false;
+                        document.getElementById('mergeAllBtn').textContent = 'Merge All';
+                        loadDuplicates();
+                        return;
+                    }
+
+                    var idx = done + errors;
+                    var groupIdx = parseInt(groups[idx]);
+                    var group = duplicateGroups[groupIdx];
+                    var kept = sel[groupIdx];
+                    var keepId = kept[0];
+                    var mergeIds = group.contacts.filter(function (c) { return kept.indexOf(c.id) === -1; }).map(function (c) { return c.id; });
+
+                    if (!mergeIds.length) {
+                        done++;
+                        processNext();
+                        return;
+                    }
+
+                    call('mergeContacts', [{ keepId: keepId, mergeIds: mergeIds }], function () {
+                        done++;
+                        processNext();
+                    }, function () {
+                        errors++;
+                        processNext();
+                    }, 'Merging group ' + (idx + 1) + ' of ' + total + '\u2026');
+                }
+
+                processNext();
+            });
+        }
+
+        // ─── Init ──────────────────────────────────────────────────────────────────
+        if (!checkAutoLogin()) {
+            document.getElementById('loginGate').style.display = 'flex';
+        }
+    </script>
+</body>
+
+</html>
