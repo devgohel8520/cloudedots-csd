@@ -3742,16 +3742,17 @@
             var m = window.location.search.match(/editReminder=(\d+)/);
             if (m) {
                 var id = parseInt(m[1], 10);
-                setTimeout(function () {
+                gas('getAllReminders', [], function (list) {
+                    allRemindersCache = list || [];
                     var rem = findReminder(id);
                     if (rem) {
                         var c = contactMap[rem.contactRow];
                         openSetReminder(rem.contactRow, rem.contactName || (c ? c.name : ''), rem);
                     } else {
-                        toast('Reminder not loaded yet, try again.', true);
+                        toast('Reminder not found.', true);
                     }
                     history.replaceState(null, '', window.location.pathname);
-                }, 800);
+                }, function () { toast('Failed to load reminder.', true); }, 'Loading reminder');
             }
         }
         function submitReminder() {
