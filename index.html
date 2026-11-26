@@ -3322,7 +3322,13 @@
         }
 
         // ─── Modals ────────────────────────────────────────────────────────────────────
-        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        var _modalZ = 100;
+        function openModal(id) {
+            var m = document.getElementById(id);
+            _modalZ += 1;
+            m.style.zIndex = _modalZ;
+            m.classList.add('open');
+        }
         function closeModal(id) { document.getElementById(id).classList.remove('open'); }
         function openImgPreview(src) { document.getElementById('imgPreviewSrc').src = src; openModal('imgPreviewModal'); }
 
